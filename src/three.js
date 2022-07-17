@@ -48,71 +48,12 @@ scene.add(pointLight);
 
 const textureLoader = new THREE.TextureLoader();
 
-const vertexShader = () => {
-  return `
-    varying vec2 vUv; 
-
-    void main() {
-      vUv = uv; 
-
-      vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-      gl_Position = projectionMatrix * modelViewPosition; 
-    }
-  `;
-};
-
-const fragmentShader = () => {
-  return `
-    uniform sampler2D texture1; 
-    uniform sampler2D texture2; 
-    varying vec2 vUv;
-
-    void main() {
-      vec4 color1 = texture2D(texture1, vUv);
-      vec4 color2 = texture2D(texture2, vUv);
-      gl_FragColor = mix(color1, color2, vUv.y);
-    }
-  `;
-};
-
 const sunGeo = new THREE.SphereGeometry(16, 30, 30);
-const sunMat = new THREE.ShaderMaterial({
-  uniforms: {
-    globeTexture: {
-      value: textureLoader.load(sunTexture),
-    },
-  },
-  fragmentShader: fragmentShader(),
-  vertexShader: vertexShader(),
+const sunMat = new THREE.MeshBasicMaterial({
+  map: textureLoader.load(sunTexture),
 });
-// const sunMat = new THREE.MeshBasicMaterial({
-//   map: textureLoader.load(sunTexture),
-// });
 const sun = new THREE.Mesh(sunGeo, sunMat);
 scene.add(sun);
-
-const atmosphere = new THREE.Mesh(
-  sunGeo,
-  new THREE.ShaderMaterial({
-    fragmentShader: fragmentShader(),
-    vertexShader: vertexShader(),
-    blending: THREE.AdditiveBlending,
-    side: THREE.BackSide,
-  })
-);
-atmosphere.scale.set(1.1, 1.1, 1.1);
-scene.add(atmosphere);
-
-// const atmosphere = new THREE.ShaderMaterial({
-//   uniforms: {
-//     globeTexture: {
-//       value: textureLoader.load(sunTexture),
-//     },
-//   },
-//   fragmentShader: fragmentShader(),
-//   vertexShader: vertexShader(),
-// });
-// scene.add(atmosphere);
 
 const mercury = createPlanet(scene, 0.4, mercuryTexture, 28);
 const venus = createPlanet(scene, 0.9, venusTexture, 35);
