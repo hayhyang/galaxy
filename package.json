@@ -6,5 +6,6 @@
   "dependencies": {
     "controls": "^0.7.5",
     "three": "^0.142.0"
-  }
+  },
+  "type": "module"
 }
