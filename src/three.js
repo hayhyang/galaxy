@@ -1,7 +1,7 @@
 import * as THREE from "three";
-import { OrbitControls } from "./lib/controls/OrbitControls";
-import { createPlanet } from "./lib/util.js";
-import { Shaders } from "./shader.js";
+import { OrbitControls } from "./OrbitControls";
+import { createPlanet } from "./lib/util";
+import { Shaders } from "./shader";
 
 import spaceTexture from "./images/space.jpeg";
 import sunTexture from "./images/texture/sun.webp";
