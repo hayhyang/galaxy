@@ -1,9 +1,7 @@
 import * as THREE from "three";
+import { scene, textureLoader } from "../three";
 
-const scene = new THREE.Scene();
-const textureLoader = new THREE.TextureLoader();
-
-export const createPlanet = (scene, size, texture, position, ring) => {
+export const createPlanet = (size, texture, position, ring) => {
   const geometry = new THREE.SphereGeometry(size, 30, 30);
   const material = new THREE.MeshStandardMaterial({
     map: textureLoader.load(texture),
@@ -31,5 +29,6 @@ export const createPlanet = (scene, size, texture, position, ring) => {
   }
   scene.add(object);
   mesh.position.x = position;
+
   return { mesh, object };
 };

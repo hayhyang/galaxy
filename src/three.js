@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "./lib/controls/OrbitControls";
 import { createPlanet } from "./lib/util.js";
+import { Shaders } from "./shader.js";
 
 import spaceTexture from "./images/space.jpeg";
 import sunTexture from "./images/texture/sun.webp";
@@ -19,7 +20,9 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const scene = new THREE.Scene();
+export const scene = new THREE.Scene();
+export const textureLoader = new THREE.TextureLoader();
+
 const camera = new THREE.PerspectiveCamera(
   45,
   window.innerWidth / window.innerHeight,
@@ -46,8 +49,6 @@ scene.background = cubeTextureLoader.load([
 const pointLight = new THREE.PointLight(0xffffff, 2, 300);
 scene.add(pointLight);
 
-const textureLoader = new THREE.TextureLoader();
-
 const sunGeo = new THREE.SphereGeometry(16, 30, 30);
 const sunMat = new THREE.MeshBasicMaterial({
   map: textureLoader.load(sunTexture),
@@ -55,26 +56,41 @@ const sunMat = new THREE.MeshBasicMaterial({
 const sun = new THREE.Mesh(sunGeo, sunMat);
 scene.add(sun);
 
-const mercury = createPlanet(scene, 0.4, mercuryTexture, 28);
-const venus = createPlanet(scene, 0.9, venusTexture, 35);
-const earth = createPlanet(scene, 1, earthTexture, 50);
-const mars = createPlanet(scene, 0.5, marsTexture, 65);
-const jupiter = createPlanet(scene, 11.2, jupiterTexture, 90);
-const saturn = createPlanet(scene, 9.4, saturnTexture, 125, {
+const atmosphereMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    c: { type: "f", value: 0.7 },
+    p: { type: "f", value: 5.0 },
+  },
+  vertexShader: Shaders.atmosphere.vertexShader,
+  fragmentShader: Shaders.atmosphere.fragmentShader,
+  side: THREE.BackSide,
+  blending: THREE.AdditiveBlending,
+  transparent: true,
+});
+const atm = new THREE.Mesh(sunGeo, atmosphereMaterial);
+atm.scale.set(1.3, 1.3, 1.3);
+scene.add(atm);
+
+const mercury = createPlanet(0.4, mercuryTexture, 28);
+const venus = createPlanet(0.9, venusTexture, 35);
+const earth = createPlanet(1, earthTexture, 50);
+const mars = createPlanet(0.5, marsTexture, 65);
+const jupiter = createPlanet(11.2, jupiterTexture, 90);
+const saturn = createPlanet(9.4, saturnTexture, 125, {
   innerRadius: 10,
   outerRadius: 15,
   texture: saturnRingTexture,
 });
-const uranus = createPlanet(scene, 4, uranusTexture, 160);
-const neptune = createPlanet(scene, 3.9, neptuneTexture, 190);
+const uranus = createPlanet(4, uranusTexture, 160);
+const neptune = createPlanet(3.9, neptuneTexture, 190);
 
-const moonGeo = new THREE.SphereGeometry(1, 30, 30);
+const moonGeo = new THREE.SphereGeometry(0.25, 30, 30);
 const moonMat = new THREE.MeshStandardMaterial({
   map: textureLoader.load(moonTexture),
 });
 const moon = new THREE.Mesh(moonGeo, moonMat);
 earth.mesh.add(moon);
-moon.position.x = 5;
+moon.position.x = 2;
 
 function animate() {
   sun.rotateY(0.002);
